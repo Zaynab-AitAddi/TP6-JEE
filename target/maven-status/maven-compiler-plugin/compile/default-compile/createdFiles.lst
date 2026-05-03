@@ -1,0 +1,15 @@
+web\security\AuthenticationInterceptor.class
+util\ValidationUtil.class
+dao\impl\ProduitDAOImpl.class
+util\PasswordUtil.class
+web\controller\ProduitController.class
+dao\model\Role.class
+metier\ProduitMetier.class
+web\controller\AuthController.class
+dao\interfaces\IProduitDAO.class
+dao\model\Produit.class
+dao\model\User.class
+metier\UserMetier.class
+web\security\WebMvcConfig.class
+dao\impl\UserDAOImpl.class
+dao\interfaces\IUserDAO.class

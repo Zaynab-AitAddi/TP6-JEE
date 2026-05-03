@@ -1,0 +1,48 @@
+# Kill Tomcat
+Get-Process -Name java -ErrorAction SilentlyContinue | Stop-Process -Force
+Start-Sleep -Seconds 2
+
+# Java setup
+$env:JAVA_HOME="C:\Program Files\Java\jdk-11"
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+
+# Tomcat
+$TOMCAT_HOME="C:\Tomcat"
+$env:CATALINA_HOME=$TOMCAT_HOME
+$env:CATALINA_BASE=$TOMCAT_HOME
+
+# 🔥 Go to ROOT project
+Set-Location "C:\Users\Zayna\Desktop\S4\JEE\TPs JEE\TP6"
+
+# Clean build
+Remove-Item -Path ".\target" -Recurse -Force -ErrorAction SilentlyContinue
+mvn clean package
+
+# 🔥 Find WAR anywhere inside target safely
+$warFile = Get-ChildItem -Path ".\target" -Recurse -Filter "*.war" | Select-Object -First 1
+
+if ($warFile -eq $null) {
+    Write-Host "❌ WAR not generated! Check pom.xml packaging." -ForegroundColor Red
+    exit
+}
+
+Write-Host "WAR found: $($warFile.FullName)" -ForegroundColor Cyan
+
+# Clean old deployment
+Remove-Item "$TOMCAT_HOME\webapps\TP6" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item "$TOMCAT_HOME\webapps\TP6.war" -Force -ErrorAction SilentlyContinue
+
+# Deploy
+Copy-Item $warFile.FullName "$TOMCAT_HOME\webapps\TP6.war" -Force
+
+# Start Tomcat
+& "$TOMCAT_HOME\bin\startup.bat"
+
+# Wait (Spring needs more time)
+Write-Host "Waiting for deployment..." -ForegroundColor Yellow
+Start-Sleep -Seconds 10
+
+# Open app
+Start-Process "http://localhost:8080/TP6/"
+
+Write-Host "✅ Try also /login" -ForegroundColor Green
